@@ -5,12 +5,17 @@
 --  modem is modem pheripheral
 
 function getFiles(event, side, recvChannel, replyChannel, text)
+	print("got message")
 	if recvChannel ~= 1 then
+		print("wrong channel ",recvChannel)
 		return nil
 	end
 
+	print("message text: ", text)
+
 	local message = textutils.unserialize(text)
 	if message.type ~= "getFiles" then
+		print("Wrong type: ",message.type)
 		return nil
 	end
 
