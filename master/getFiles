@@ -1,24 +1,24 @@
 -- Handles getFiles events.  This is called when a new computer connects to the network.
+-- Gets all the files that belong to that computer type and sends it to that computer
 
 -- Assumes:
 --  es is EventSystem API
 --  modem is modem pheripheral
 
+os.loadAPI("apis/const")
+
 function getFiles(event, side, recvChannel, replyChannel, text)
-	print("got message")
+	local idx
 	if recvChannel ~= 1 then
-		print("wrong channel ",recvChannel)
 		return nil
 	end
-
-	print("message text: ", text)
 
 	local message = textutils.unserialize(text)
 	if message.type ~= "getFiles" then
-		print("Wrong type: ",message.type)
 		return nil
 	end
 
+	-- Send all computer specific files
 	fileList = fs.list(message.computerType)
 	if #fileList == 0 then
 		print("ERROR!  Unknown computer type: "..message.computerType)
@@ -32,11 +32,18 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 	for _, file in pairs(fileList) do
 		handle = fs.open(fs.combine(message.computerType,file), "r")
 		response[file] = handle.readAll()
-		print("File contents:")
-		print(response[file])
+	end
+
+	-- Send APIs
+	fileList = fs.list("apis")
+	if #fileList > 0 then
+		for _, file in pairs(fileList) do
+			handle = fs.open(fs.combine("apis",file), "r")
+			response["apis/"..file] = handle.readAll()
+		end
 	end
 	modem.open(replyChannel)
-	modem.transmit(replyChannel, 1, textutils.serialize(response))
+	modem.transmit(replyChannel, const.channel.admin, textutils.serialize(response))
 	modem.close(replyChannel)
 end
 

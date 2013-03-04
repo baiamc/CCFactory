@@ -1,1 +1,4 @@
-print("I'm a barrel sorter")
+local params = rememberParams(unpack({...}))
+
+print(textutils.serialize(params))
+

@@ -1,14 +1,14 @@
-local config = {
-	type = "",
-	facing = "",
-	modemPosition = ""
-}
+-- Initializes a slave computer.  Requires a running master server.
+
+-- Usage: initializeSlave [type] [params...]
+
+local config = { ... }
 
 local modem = peripheral.wrap(config.modemPosition)
 
 local message = {
 	type = "getFiles",
-	computerType = config.type
+	computerType = table.remove(config,1)
 }
 
 local respChannel = 10000 + os.getComputerID()
@@ -19,16 +19,16 @@ modem.transmit(1, respChannel, textutils.serialize(message))
 modem.close(1)
 local channel, code
 while channel ~= respChannel do
-	_, channel, _, code = os.pullEvent("modem_message")
+	_, _, channel, _, code = os.pullEvent("modem_message")
 end
 code = textutils.unserialize(code)
 local filename, text
-for filename, text in code do
+for filename, text in pairs(code) do
 	local handle = fs.open(filename, "w")
 	handle.write(text)
 	handle.close()
 end
 
-shell.run("startup")
+shell.run("startup", unpack(config))
 
 

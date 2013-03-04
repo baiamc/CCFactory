@@ -1,0 +1,13 @@
+channel = {
+	admin = 1,
+	getPrivate = function () return 10000 + os.getComputerID() end
+}
+
+dir = {
+	down = 0
+	up = 1
+	north = 2
+	south = 3
+	west = 4
+	east = 5
+}

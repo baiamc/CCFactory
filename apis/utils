@@ -1,0 +1,19 @@
+function rememberParams(...)
+	local handle, params, data
+	if #arg > 0 then
+		handle = fs.open(".params", "w")
+		handle.write(textutils.serialize(arg))
+		fs.close()
+		return arg
+	else
+		handle = fs.open(".params", "r")
+		if not handle then return {} end
+		data = handle.readAll()
+		if data ~= nil then
+			params = textutils.unserialize(data)
+		else
+			params = {}
+		end
+		return params
+	end
+end
