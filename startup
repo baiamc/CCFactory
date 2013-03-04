@@ -3,4 +3,15 @@
 
 os.loadAPI("apis/es")
 
-shell.run("master/pushChanges")
+function debug(...)
+	print("Got event:")
+	for k,v in ipairs(arg) do
+		print(k.."-"..v)
+	end
+end
+
+es.addHandler(debug)
+
+shell.run("master/getFiles")
+
+es.start()
