@@ -19,6 +19,11 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 	end
 
 	-- Send all computer specific files
+	if message.computerType == nil then 
+		print("ERROR!  No computer type provided.")
+		return nil
+	end
+	
 	fileList = fs.list(message.computerType)
 	if #fileList == 0 then
 		print("ERROR!  Unknown computer type: "..message.computerType)
