@@ -1,0 +1,34 @@
+local config = {
+	type = "",
+	facing = "",
+	modemPosition = ""
+}
+
+local modem = peripheral.wrap(config.modemPosition)
+
+local message = {
+	type = "getFiles",
+	computerType = config.type
+}
+
+local respChannel = 10000 + os.getComputerID()
+
+modem.open(1)
+modem.open(respChannel)
+modem.transmit(1, respChannel, textutils.serialize(message))
+modem.close(1)
+local channel, code
+while channel ~= respChannel do
+	_, channel, _, code = os.pullEvent("modem_message")
+end
+code = textutils.unserialize(code)
+local filename, text
+for filename, text in code do
+	local handle = fs.open(filename, "w")
+	handle.write(text)
+	handle.close()
+end
+
+shell.run("startup")
+
+

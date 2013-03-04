@@ -1,0 +1,155 @@
+os.pullEvent = os.pullEventRaw
+
+local running = false
+
+local handlers = {}
+local handlerkeys = {}
+
+local eventWaiting = {}
+local terminate = true
+
+local function tickloop()
+  while true do
+    triggerEvent('tick')
+    sleep(0.05)
+  end
+end
+
+local function eventloop()
+  while true do
+    local ev, a, b, c = os.pullEventRaw()
+    
+    if (ev == 'terminate' and terminate) or ev == 'internal-terminate' then
+      triggerEvent('end')
+      exit()
+      return
+    else
+      triggerEvent(ev,a,b,c)
+      triggerEvent('general',a,b,c)
+    end
+  end
+end
+
+function triggerEvent(ev,a,b,c)
+  
+  if eventWaiting[1] ~= nil then
+    if ev ~= eventWaiting[1] then return false end
+    local argtable = {a,b,c}
+   
+    for i = 2,#eventWaiting do
+      if eventWaiting[i] == nil then break end
+      if eventWaiting[i] ~= argtable[i-1] then
+        return false
+      end
+    end
+    eventWaiting = {}
+  end
+  
+  if ev == nil or handlers == nil then return false end
+  
+  if handlers[ev] == nil then return false end
+  
+  
+  if type(handlers[ev]) ~= 'table' and handlers[ev] ~= nil then 
+    handlers[ev] = nil
+  end
+  
+  if #handlers[ev] == 0 then return false end
+  
+  for i = 1,#handlers[ev] do
+    handlers[ev][i](ev,a,b,c)
+  end
+  
+  return true
+end
+
+function addHandler(etype, func)
+  if func == nil then 
+    func = etype
+    etype = "general"
+  end
+  
+  if type(func) ~= 'function' or type(etype) ~= 'string' then
+    if (not type(func) == 'string') and (not type(etype) == 'function') then
+      return false
+    end
+    
+    if type(func) == 'string' and type(etype) == 'function' then
+      local inter = func
+      func = etype
+      etype = inter
+    end
+  end
+ 
+  
+  if handlers[etype] == nil then
+    handlers[etype] = {}
+    table.insert(handlerkeys,etype)
+  end
+  for i = 1,#handlers[etype] do
+    if func == handlers[etype][i] then
+      return false
+    end
+  end
+  table.insert(handlers[etype],func)  
+  return true
+end
+
+function removeHandler(func)
+  while true do
+    local found = false
+    for i = 1,#handlerkeys do
+      local k = handlerkeys[i]
+      for j = 1,#handlers[k] do
+        if handlers[k][j] == func then
+          handlers[k][j] = nil
+          found = true
+          break
+        end
+      end
+      
+      if found then break end
+    end  
+    if not found then return false end
+  end
+  
+  local rmi = {}
+  
+  for i = 1,#handlerkeys do
+    local k = handlerkeys[i]
+    if #handlers[k] == 0 then
+      handlers[k] = nil
+      table.insert(rmi,i)
+    end
+  end
+  for i = 1,#rmi do
+    table.remove(handlerkeys,rmi[i])
+  end
+
+end
+
+function exit()
+  handlers = nil
+  os.queueEvent('internal-terminate')
+end
+
+function waitForEvent(ev,a,b,c)
+  if ev == nil then return false end
+  eventWaiting = {ev,a,b,c}
+  return true
+end
+
+function start()
+  if not running then
+    running = true
+    triggerEvent('begin')
+    parallel.waitForAny(eventloop,tickloop)
+  end
+end
+
+function setTerminate(bool)
+  if type(bool) ~= 'boolean' then
+    return false
+  end
+  terminate = bool
+end

@@ -1,0 +1,5 @@
+admin = 1
+
+function getPrivate()
+	return 10000 + os.getComputerID()
+end
