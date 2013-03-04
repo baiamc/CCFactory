@@ -1,10 +1,12 @@
+os.loadAPI("apis/const")
+
 local args = {...}
 
 if #args ~= 2 then 
 	print("Usage: config [sortDir] [extractDir]")
 end
 
-local params = { sortDir = params[1], extractDir = params[2]}
+local params = { sortDir = args[1], extractDir = args[2]}
 
 tmp = tonumber(params.sortDir)
 if not tmp then 

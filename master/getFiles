@@ -52,4 +52,5 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 	modem.close(replyChannel)
 end
 
+modem.open(const.channel.admin)
 es.addHandler("modem_message", getFiles)

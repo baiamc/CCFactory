@@ -28,6 +28,7 @@ local message = {
 }
 
 os.setComputerLabel(message.computerType)
+fs.makeDir("apis")
 
 local respChannel = 10000 + os.getComputerID()
 
