@@ -31,11 +31,11 @@ local function eventloop()
   end
 end
 
-function triggerEvent(ev,a,b,c)
+function triggerEvent(ev,...)
   
   if eventWaiting[1] ~= nil then
     if ev ~= eventWaiting[1] then return false end
-    local argtable = {a,b,c}
+    local argtable = arg
    
     for i = 2,#eventWaiting do
       if eventWaiting[i] == nil then break end
@@ -58,7 +58,7 @@ function triggerEvent(ev,a,b,c)
   if #handlers[ev] == 0 then return false end
   
   for i = 1,#handlers[ev] do
-    handlers[ev][i](ev,a,b,c)
+    handlers[ev][i](ev,unpack(arg))
   end
   
   return true
@@ -134,9 +134,9 @@ function exit()
   os.queueEvent('internal-terminate')
 end
 
-function waitForEvent(ev,a,b,c)
+function waitForEvent(ev,...)
   if ev == nil then return false end
-  eventWaiting = {ev,a,b,c}
+  eventWaiting = {ev,unpack(arg)}
   return true
 end
 
