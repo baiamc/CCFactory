@@ -3,7 +3,7 @@ function rememberParams(...)
 	if #arg > 0 then
 		handle = fs.open(".params", "w")
 		handle.write(textutils.serialize(arg))
-		fs.close()
+		handle.close()
 		return arg
 	else
 		handle = fs.open(".params", "r")
@@ -14,6 +14,17 @@ function rememberParams(...)
 		else
 			params = {}
 		end
+		handle.close()
 		return params
 	end
 end
+
+function modemHandler(listenChannel, messageType, handler)
+	return function ( event, side, recvChannel, replyChannel, messageText )	
+		if recvChannel ~= listenChannel then return nil end
+		if not messageText or #messageText = 0 then return nil end
+		local message = textutils.unserialize(messageText))
+		if message.type == messageType then
+			handler(message)
+		end
+	end

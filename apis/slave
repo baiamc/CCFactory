@@ -1,0 +1,57 @@
+-- Functionality common to all slave computers
+if not const then os.loadAPI("apis/const") end
+
+local function watchForReload(event, side, recvChannel, replyChannel, text)
+	if recvChannel ~= const.channel.admin then 
+		return nil 
+	end
+
+	if not text or #text == 0 then
+		print("ERROR! No message text supplied.")
+		return nil
+	end
+	local message = textutils.unserialize(text)
+
+	if message.type ~= "reload" then 
+		return nil
+	end
+
+	es.exit()
+
+end
+
+-- Makes the modem and params varriables available
+function init()
+	local sides, side, ptype
+	-- Find peripherals
+	sides = { "top", "bottom", "left", "right", "back" }
+	for _, side in pairs(sides) do
+		ptype = peripheral.getType(side)
+		if ptype == "modem" then
+			modem = peripheral.wrap(side)
+		end
+		if ptype == "interactiveSorter" then
+			sorter = peripheral.wrap(side)
+		end
+		if modem == nil then
+			error("Could not find modem!")
+		end
+	end
+
+	-- Get params
+	params = {...}
+	if #params > 0 then
+		handle = fs.open(".params", "w")
+		handle.write(textutils.serialize(args))
+		handle.close()
+	else
+		handle = fs.open(".params", "r")
+		if handle then
+			data = handle.readAll()
+			if data ~= nil then
+				params = textutils.unserialize(data)
+			end
+			handle.close()
+		end
+	end
+end

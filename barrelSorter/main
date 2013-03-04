@@ -1,0 +1,58 @@
+os.loadAPI("apis/const")
+os.loadAPI("apis/es")
+os.loadAPI("apis/slave")
+os.loadAPI("apis/utils")
+
+local sortType, extractType, sortDirection, extractDirection,params,modem,sorter,invData
+
+function doSort(sortType, sortDirection)
+	return function (event, currentItem, itemAmt)
+		if currentItem == sortType then
+			sorter.sort(const.dir.down)
+		else
+			sorter.sort(sortDirection)
+		end
+	end
+end
+
+function doExtract(extractType, extractDirection)
+	return utils.modemHandler(const.channel.extract, extractType, function (message)
+		local amt, available
+		amt = message.amount
+		_, available = next(sorter.list(const.dir.up))
+		while available <= amt do 
+			print("Not enough items...sleeping.")
+			sleep(30) 
+		end
+		while amt > 64 do
+			sorter.extract(const.dir.up, extractType, extractDirection, 64)
+			amt = amt - 64
+		end
+		sorter.extract(const.dir.up, extractType, extractDirection, amt)
+	end)
+end
+
+slave.init()
+
+sortDirection = params[1]
+extractDirection = params[2]
+
+-- Setup sorting, regardless of there being an inventory below or not
+invData = sorter.list(const.dir.down)
+sortType = nil
+if invData then
+	sortType = next(invData)
+end
+es.addHandler("isort_item", doSort(sortType, sortDirection))
+
+-- Setup extracting
+
+invData = sorter.list(const.dir.up)
+if invData then
+	extractType = next(invData)
+	es.addHandler("modem_message", doExtract(extractType, extractDirection))
+end
+
+
+
+

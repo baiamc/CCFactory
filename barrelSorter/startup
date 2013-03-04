@@ -1,4 +1,3 @@
-local params = rememberParams(unpack({...}))
-
-print(textutils.serialize(params))
-
+while true do
+	os.shell("main", unpack({...}))
+end
