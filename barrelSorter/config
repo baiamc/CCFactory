@@ -1,0 +1,21 @@
+local args = {...}
+
+if #args ~= 2 then 
+	print("Usage: config [sortDir] [extractDir]")
+end
+
+local params = { sortDir = params[1], extractDir = params[2]}
+
+tmp = tonumber(params.sortDir)
+if not tmp then 
+	params.sortDir = const.dir[params.sortDir:lower()]
+end
+
+tmp = tonumber(params.extractDir)
+if not tmp then
+	params.extractDir = const.dir[params.extractDir:lower()]
+end
+
+local handle = fs.open(".params", "w")
+handle.write(textutils.serialize(params))
+handle.close()

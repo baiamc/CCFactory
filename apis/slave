@@ -39,19 +39,16 @@ function init()
 	end
 
 	-- Get params
-	params = {...}
-	if #params > 0 then
-		handle = fs.open(".params", "w")
-		handle.write(textutils.serialize(args))
-		handle.close()
-	else
-		handle = fs.open(".params", "r")
-		if handle then
-			data = handle.readAll()
-			if data ~= nil then
-				params = textutils.unserialize(data)
-			end
-			handle.close()
+	handle = fs.open(".params", "r")
+	if handle then
+		data = handle.readAll()
+		if data ~= nil then
+			params = textutils.unserialize(data)
 		end
+		handle.close()
 	end
+
+	-- Listen for code updates
+	utils.modemHandler
+
 end

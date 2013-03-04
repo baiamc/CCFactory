@@ -2,7 +2,13 @@
 
 -- Usage: initializeSlave [type] [params...]
 
-local config = { ... }
+local params = { ... }
+
+-- Validate usage
+if #params < 1 then
+	print("Usage: initializeSlave [type] (params)")
+	return nil
+end
 
 local modem, side
 local sides = {"top", "bottom", "left", "right", "back"}
@@ -18,8 +24,10 @@ end
 
 local message = {
 	type = "getFiles",
-	computerType = table.remove(config,1)
+	computerType = table.remove(params,1)
 }
+
+os.setComputerLabel(message.computerType)
 
 local respChannel = 10000 + os.getComputerID()
 
@@ -39,6 +47,10 @@ for filename, text in pairs(code) do
 	handle.close()
 end
 
-shell.run("startup", unpack(config))
+print("Code downloaded sucessfully.")
+
+if #params > 0 then
+	shell.run("config", unpack(params))
+end
 
 

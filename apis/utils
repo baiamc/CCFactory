@@ -20,6 +20,7 @@ function rememberParams(...)
 end
 
 function modemHandler(listenChannel, messageType, handler)
+	modem
 	return function ( event, side, recvChannel, replyChannel, messageText )	
 		if recvChannel ~= listenChannel then return nil end
 		if not messageText or #messageText = 0 then return nil end

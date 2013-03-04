@@ -3,19 +3,20 @@ os.loadAPI("apis/es")
 os.loadAPI("apis/slave")
 os.loadAPI("apis/utils")
 
-local sortType, extractType, sortDirection, extractDirection,params,modem,sorter,invData
+local sortType,extractType,params,modem,sorter,invData
 
-function doSort(sortType, sortDirection)
+function doSort()
 	return function (event, currentItem, itemAmt)
 		if currentItem == sortType then
+			sorter.
 			sorter.sort(const.dir.down)
 		else
-			sorter.sort(sortDirection)
+			sorter.sort(params.sortDir)
 		end
 	end
 end
 
-function doExtract(extractType, extractDirection)
+function doExtract()
 	return utils.modemHandler(const.channel.extract, extractType, function (message)
 		local amt, available
 		amt = message.amount
@@ -25,17 +26,14 @@ function doExtract(extractType, extractDirection)
 			sleep(30) 
 		end
 		while amt > 64 do
-			sorter.extract(const.dir.up, extractType, extractDirection, 64)
+			sorter.extract(const.dir.up, extractType, params.extractDir, 64)
 			amt = amt - 64
 		end
-		sorter.extract(const.dir.up, extractType, extractDirection, amt)
+		sorter.extract(const.dir.up, extractType, params.extractDir, amt)
 	end)
 end
 
 slave.init()
-
-sortDirection = params[1]
-extractDirection = params[2]
 
 -- Setup sorting, regardless of there being an inventory below or not
 invData = sorter.list(const.dir.down)
@@ -43,14 +41,14 @@ sortType = nil
 if invData then
 	sortType = next(invData)
 end
-es.addHandler("isort_item", doSort(sortType, sortDirection))
+es.addHandler("isort_item", doSort(sortType, params.sortDir))
 
 -- Setup extracting
 
 invData = sorter.list(const.dir.up)
 if invData then
 	extractType = next(invData)
-	es.addHandler("modem_message", doExtract(extractType, extractDirection))
+	es.addHandler("modem_message", doExtract(extractType, params.extractDir))
 end
 
 

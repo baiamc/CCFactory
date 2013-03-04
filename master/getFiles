@@ -9,7 +9,7 @@ os.loadAPI("apis/const")
 
 function getFiles(event, side, recvChannel, replyChannel, text)
 	local idx
-	if recvChannel ~= 1 then
+	if recvChannel ~= const.channel.admin then
 		return nil
 	end
 
@@ -23,7 +23,7 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 		print("ERROR!  No computer type provided.")
 		return nil
 	end
-	
+
 	fileList = fs.list(message.computerType)
 	if #fileList == 0 then
 		print("ERROR!  Unknown computer type: "..message.computerType)
