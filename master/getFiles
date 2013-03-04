@@ -4,7 +4,7 @@
 --  es is EventSystem API
 --  modem is modem pheripheral
 
-function getFiles(event, recvChannel, replyChannel, text)
+function getFiles(event, side, recvChannel, replyChannel, text)
 	if recvChannel ~= 1 then
 		return nil
 	end
@@ -25,10 +25,14 @@ function getFiles(event, recvChannel, replyChannel, text)
 		type = "getFilesResponse"
 	}
 	for _, file in pairs(fileList) do
-		handle = fs.open(fs.combine(message.computerType,file))
+		handle = fs.open(fs.combine(message.computerType,file), "r")
 		response[file] = handle.readAll()
+		print("File contents:")
+		print(response[file])
 	end
 	modem.open(replyChannel)
 	modem.transmit(replyChannel, 1, textutils.serialize(response))
 	modem.close(replyChannel)
 end
+
+es.addHandler("modem_message", getFiles)

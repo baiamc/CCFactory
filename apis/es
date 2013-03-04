@@ -17,15 +17,16 @@ end
 
 local function eventloop()
   while true do
-    local ev, a, b, c = os.pullEventRaw()
+    local params = {os.pullEventRaw()}
+    local ev = table.remove(params, 1)
     
     if (ev == 'terminate' and terminate) or ev == 'internal-terminate' then
       triggerEvent('end')
       exit()
       return
     else
-      triggerEvent(ev,a,b,c)
-      triggerEvent('general',a,b,c)
+      triggerEvent(ev,unpack(params))
+      triggerEvent('general',unpack(params))
     end
   end
 end
