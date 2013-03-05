@@ -47,9 +47,7 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 			response["apis/"..file] = handle.readAll()
 		end
 	end
-	modem.open(replyChannel)
 	modem.transmit(replyChannel, const.channel.admin, textutils.serialize(response))
-	modem.close(replyChannel)
 end
 
 modem.open(const.channel.admin)

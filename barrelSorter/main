@@ -8,7 +8,7 @@ local sortType,extractType,params,modem,sorter,invData
 function doSort()
 	return function (event, currentItem, itemAmt)
 		if currentItem == sortType then
-			sorter.
+			sorter.list
 			sorter.sort(const.dir.down)
 		else
 			sorter.sort(params.sortDir)
@@ -33,7 +33,7 @@ function doExtract()
 	end)
 end
 
-slave.init()
+modem, params = slave.init()
 
 -- Setup sorting, regardless of there being an inventory below or not
 invData = sorter.list(const.dir.down)
@@ -50,6 +50,8 @@ if invData then
 	extractType = next(invData)
 	es.addHandler("modem_message", doExtract(extractType, params.extractDir))
 end
+
+es.start()
 
 
 

@@ -1,9 +1,17 @@
-function itemInSystem()
+if not const then os.loadAPI("const") end
+if not utils then os.loadAPI("utils") end
+
+if not modem then modem = utils.findPeripheral("modem")
+if not modem then
+	print("ERROR!  Could not find modem!")
+end
+
+function itemInSystem(itemID)
 
 end
 
-function getItemMax()
-
+function getItemMax(itemID)
+	modem.transmit()
 end
 
 function addIemToSystem()

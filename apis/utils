@@ -1,31 +1,21 @@
-function rememberParams(...)
-	local handle, params, data
-	if #arg > 0 then
-		handle = fs.open(".params", "w")
-		handle.write(textutils.serialize(arg))
-		handle.close()
-		return arg
-	else
-		handle = fs.open(".params", "r")
-		if not handle then return {} end
-		data = handle.readAll()
-		if data ~= nil then
-			params = textutils.unserialize(data)
-		else
-			params = {}
+function modemHandler(listenChannel, messageType, handler)
+	return function ( event, side, recvChannel, replyChannel, messageText )	
+		if recvChannel ~= listenChannel then return nil end
+		if not messageText or #messageText == 0 then return nil end
+		local message = textutils.unserialize(messageText)
+		if message.type == messageType then
+			handler(message, replyChannel)
 		end
-		handle.close()
-		return params
 	end
 end
 
-function modemHandler(listenChannel, messageType, handler)
-	modem
-	return function ( event, side, recvChannel, replyChannel, messageText )	
-		if recvChannel ~= listenChannel then return nil end
-		if not messageText or #messageText = 0 then return nil end
-		local message = textutils.unserialize(messageText))
-		if message.type == messageType then
-			handler(message)
+function findPeripheral(type)
+	local sides = {"top", "bottom", "left", "right", "front", "back"}
+	local idx
+	for idx = 1,#sides do
+		if peripheral.getType(sides[idx]) == type then
+			return peripheral.wrap(sides[idx])
 		end
 	end
+	return nil
+end

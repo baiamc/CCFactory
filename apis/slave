@@ -1,5 +1,7 @@
 -- Functionality common to all slave computers
 if not const then os.loadAPI("apis/const") end
+if not utils then os.loadAPI("apis/utils") end
+if not es then os.loadAPI("apis/es") end
 
 local function watchForReload(event, side, recvChannel, replyChannel, text)
 	if recvChannel ~= const.channel.admin then 
@@ -49,6 +51,16 @@ function init()
 	end
 
 	-- Listen for code updates
-	utils.modemHandler
+	utils.modemHander(const.channel.admin, os.getComputerLabel(), function (message)
+		local filename, text, handle
+		if not message.code then return nil end
+		for filename, text in pairs(code) do
+			handle = fs.open(filename, "w")
+			handle.write(text)
+			handle.close()
+		end
+		es.exit()
+	end)
 
+	return modem, params
 end

@@ -1,6 +1,7 @@
 channel = {
 	admin = 1,
 	extract = 2,
+	itmMgr = 3,
 	getPrivate = function () return 10000 + os.getComputerID() end
 }
 
@@ -11,4 +12,11 @@ dir = {
 	south = 3,
 	west = 4,
 	east = 5
+}
+
+level = {
+	low = 0,
+	normal = 1,
+	extra = 2,
+	full = 3
 }

@@ -2,7 +2,9 @@
 -- Registers all the event handling code
 
 os.loadAPI("apis/es")
+os.loadAPI("apis/utils")
 
+if not modem then utils.findPeripheral("modem")
 shell.run("master/getFiles")
 
 es.start()
