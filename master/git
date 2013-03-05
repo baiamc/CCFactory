@@ -9,7 +9,7 @@ function sendDir(folder)
 	message = { type = folder, code = {} }
 	for _, file in ipairs(fs.list(folder)) do
 		filename = fs.combine(folder, file)
-		message.code[filename] = fs.open(filename, "r").readAll()
+		message.code[file] = fs.open(filename, "r").readAll()
 	end
 	for _, file in ipairs(fs.list("apis")) do
 		filename = fs.combine("apis", file)

@@ -1,1 +1,4 @@
-print("startup script")
+while true do
+	shell.run("main")
+	print("Main terminated, recovering")
+end
