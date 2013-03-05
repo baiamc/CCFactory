@@ -23,6 +23,7 @@ function init()
 		local filename, text, handle
 		if not message then return nil end 
 		if not message.code then return nil end
+		print("Receiving code update...")
 		for filename, text in pairs(code) do
 			handle = fs.open(filename, "w")
 			handle.write(text)

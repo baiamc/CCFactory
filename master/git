@@ -1,18 +1,19 @@
-if not utils then os.loadAPI("utils")
+if not utils then os.loadAPI("utils") end
 
 args = { ... }
 
 function sendDir(folder)
 	local message, file, handle, text, modem
 	modem = utils.findPeripheral("modem")
-	message { type = folder }
+	print("Pushing code for ", folder, "...")
+	message = { type = folder, code = {} }
 	for _, file in ipairs(fs.list(folder)) do
 		filename = fs.combine(folder, file)
-		message[filename] = fs.open(filename, "r").readAll()
+		message.code[filename] = fs.open(filename, "r").readAll()
 	end
 	for _, file in ipairs(fs.list("apis")) do
 		filename = fs.combine("apis", file)
-		message[filename] = fs.open(filename, "r").readAll()
+		message.code[filename] = fs.open(filename, "r").readAll()
 	end
 	modem.transmit(const.channel.admin, 0, textutils.serialize(message))
 end
@@ -24,7 +25,7 @@ elseif args[1] == "push" then
 	dirlist = fs.list("/")
 	if not args[2] then
 		for _, dir in ipairs(dirlist) do
-			if fs.isDir(dir) and dir ~= "apis" and dir ~= "master" then
+			if fs.isDir(dir) and dir ~= "apis" and dir ~= "master" and dir ~= "rom" then
 				sendDir(dir)
 			end
 		end

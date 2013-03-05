@@ -155,7 +155,7 @@ function modemOnce(listenChannel, messageType, func)
     func(unpack(arg))
     removeHandler(handler)
   end)
-
+end
 
 function exit()
   handlers = nil
