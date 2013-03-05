@@ -4,7 +4,7 @@
 os.loadAPI("apis/es")
 os.loadAPI("apis/utils")
 
-if not modem then utils.findPeripheral("modem")
+if not modem then modem = utils.findPeripheral("modem") end
 shell.run("master/getFiles")
 
 es.start()

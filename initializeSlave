@@ -32,10 +32,9 @@ fs.makeDir("apis")
 
 local respChannel = 10000 + os.getComputerID()
 
-modem.open(1)
 modem.open(respChannel)
 modem.transmit(1, respChannel, textutils.serialize(message))
-modem.close(1)
+
 local channel, code
 while channel ~= respChannel do
 	_, _, channel, _, code = os.pullEvent("modem_message")

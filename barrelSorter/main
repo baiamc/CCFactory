@@ -2,38 +2,66 @@ os.loadAPI("apis/const")
 os.loadAPI("apis/es")
 os.loadAPI("apis/slave")
 os.loadAPI("apis/utils")
+os.loadAPI("apis/invMgr")
 
 local sortType,extractType,params,modem,sorter,invData
 
-function doSort()
-	return function (event, currentItem, itemAmt)
-		if currentItem == sortType then
-			sorter.list
-			sorter.sort(const.dir.down)
-		else
-			sorter.sort(params.sortDir)
+modem = utils.findPeripheral("modem")
+sorter = utils.findPeripheral("interactiveSorter")
+
+-- Event handler for when an item enters an interactive sorter on a barrel
+function doSort(event, currentItem, itemAmt)
+	if currentItem == sortType then
+		_, currentAmt = next(sorter.list(sortDir))
+		-- Prevent us from overflowing the barrel
+		if itemAmt + currentAmt > 128 then
+			overflow = itemAmt + currentAmt - 128
+			itemAmt = itemAmt - overflow
+			sorter.sort(params.extractDir, overflow)
 		end
+
+		-- Stick item in barrel and update the manager
+		sorter.sort(const.dir.down, itemAmt)
+		invMgr.addItem(sortType, itemAmt)
 	end
 end
 
+-- Event handler called when an item needs to be extracted
 function doExtract()
 	return utils.modemHandler(const.channel.extract, extractType, function (message)
-		local amt, available
-		amt = message.amount
-		_, available = next(sorter.list(const.dir.up))
-		while available <= amt do 
-			print("Not enough items...sleeping.")
-			sleep(30) 
-		end
-		while amt > 64 do
+		local extractAmt, available
+		extractAmt = message.amount
+		while extractAmt > 64 do
 			sorter.extract(const.dir.up, extractType, params.extractDir, 64)
-			amt = amt - 64
+			extractAmt = extractAmt - 64
 		end
-		sorter.extract(const.dir.up, extractType, params.extractDir, amt)
+		sorter.extract(const.dir.up, extractType, params.extractDir, extractAmt)
 	end)
 end
 
-modem, params = slave.init()
+-- Event handler called when a new item type is added to the system
+-- Need to let the extract computer know.
+function itemAdded()
+	return utils.modemHandler(const.channel.extract, "itemAdded", function (message)
+		if extractType = nil then
+			invData = sorter.list(const.dir.up)
+			if invData then
+				extractType = next(invData)
+				es.addHandler("modem_message", doExtract())
+			end
+		end
+	end)
+end
+
+-- Called when an item is to be removed completely from storage
+function removeItem()
+	return utils.modemHandler(const)
+
+
+params = slave.init()
+
+-- Clear the machine on startup, clears any clogs
+sorter.sort(params.extractDir)
 
 -- Setup sorting, regardless of there being an inventory below or not
 invData = sorter.list(const.dir.down)
@@ -41,16 +69,17 @@ sortType = nil
 if invData then
 	sortType = next(invData)
 end
-es.addHandler("isort_item", doSort(sortType, params.sortDir))
+es.addHandler("isort_item", doSort)
 
 -- Setup extracting
 
 invData = sorter.list(const.dir.up)
 if invData then
 	extractType = next(invData)
-	es.addHandler("modem_message", doExtract(extractType, params.extractDir))
+	es.addHandler("modem_message", doExtract())
 end
 
+modem.open(const.channel.extract)
 es.start()
 
 

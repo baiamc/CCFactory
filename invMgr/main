@@ -1,0 +1,10 @@
+os.loadAPI("apis/const")
+os.loadAPI("apis/es")
+os.loadAPI("apis/slave")
+os.loadAPI("apis/utils")
+
+local modem = utils.findPeripheral("modem")
+
+es.modemHandler(const.channel.invMgr, "addItem", function (message)
+	print("Recieved ",message.amount," of ", message.id)
+end)
