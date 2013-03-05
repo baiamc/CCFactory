@@ -5,7 +5,7 @@ args = { ... }
 function sendDir(folder)
 	local message, file, handle, text, modem
 	modem = utils.findPeripheral("modem")
-	message { type = dir }
+	message { type = folder }
 	for _, file in ipairs(fs.list(folder)) do
 		filename = fs.combine(folder, file)
 		message[filename] = fs.open(filename, "r").readAll()
@@ -24,11 +24,13 @@ elseif args[1] == "push" then
 	dirlist = fs.list("/")
 	if not args[2] then
 		for _, dir in ipairs(dirlist) do
-			if fs.isDir(dir) and dir ~= "apis" and dir ~= "master" and dir ~= "programs" then
-				
+			if fs.isDir(dir) and dir ~= "apis" and dir ~= "master" then
+				sendDir(dir)
 			end
 		end
 	else
+		sendDir(args[2])
+	end
 else
 	print("Unknown command")
 end
