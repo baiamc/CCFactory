@@ -12,7 +12,7 @@ sorter = utils.findPeripheral("interactiveSorter")
 -- Event handler for when an item enters an interactive sorter on a barrel
 function doSort(event, currentItem, itemAmt)
 	if currentItem == sortType then
-		_, currentAmt = next(sorter.list(sortDir))
+		_, currentAmt = next(sorter.list(params.sortDir))
 		-- Prevent us from overflowing the barrel
 		if itemAmt + currentAmt > 128 then
 			overflow = itemAmt + currentAmt - 128
@@ -27,16 +27,14 @@ function doSort(event, currentItem, itemAmt)
 end
 
 -- Event handler called when an item needs to be extracted
-function doExtract()
-	return utils.modemHandler(const.channel.extract, extractType, function (message)
-		local extractAmt, available
-		extractAmt = message.amount
-		while extractAmt > 64 do
-			sorter.extract(const.dir.up, extractType, params.extractDir, 64)
-			extractAmt = extractAmt - 64
-		end
-		sorter.extract(const.dir.up, extractType, params.extractDir, extractAmt)
-	end)
+function doExtract(message)
+	local extractAmt, available
+	extractAmt = message.amount
+	while extractAmt > 64 do
+		sorter.extract(const.dir.up, extractType, params.extractDir, 64)
+		extractAmt = extractAmt - 64
+	end
+	sorter.extract(const.dir.up, extractType, params.extractDir, extractAmt)
 end
 
 -- Event handler called when a new item type is added to the system
@@ -77,7 +75,7 @@ es.addHandler("isort_item", doSort)
 invData = sorter.list(const.dir.up)
 if invData then
 	extractType = next(invData)
-	es.addHandler("modem_message", doExtract())
+	es.modemHandler(const.channel.extract, extractType, doExtract
 end
 
 modem.open(const.channel.extract)

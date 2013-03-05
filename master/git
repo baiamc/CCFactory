@@ -1,0 +1,34 @@
+if not utils then os.loadAPI("utils")
+
+args = { ... }
+
+function sendDir(folder)
+	local message, file, handle, text, modem
+	modem = utils.findPeripheral("modem")
+	message { type = dir }
+	for _, file in ipairs(fs.list(folder)) do
+		filename = fs.combine(folder, file)
+		message[filename] = fs.open(filename, "r").readAll()
+	end
+	for _, file in ipairs(fs.list("apis")) do
+		filename = fs.combine("apis", file)
+		message[filename] = fs.open(filename, "r").readAll()
+	end
+	modem.transmit(const.channel.admin, 0, textutils.serialize(message))
+end
+
+
+if args[1] == "pull" then 
+	shell.run("master/github","clone","baiamc/CCFactory","/")
+elseif args[1] == "push" then
+	dirlist = fs.list("/")
+	if not args[2] then
+		for _, dir in ipairs(dirlist) do
+			if fs.isDir(dir) and dir ~= "apis" and dir ~= "master" and dir ~= "programs" then
+				
+			end
+		end
+	else
+else
+	print("Unknown command")
+end

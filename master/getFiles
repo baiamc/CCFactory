@@ -5,25 +5,9 @@
 --  es is EventSystem API
 --  modem is modem pheripheral
 
-os.loadAPI("apis/const")
+if not const then os.loadAPI("apis/const") end
 
-function getFiles(event, side, recvChannel, replyChannel, text)
-	local idx
-	if recvChannel ~= const.channel.admin then
-		return nil
-	end
-
-	local message = textutils.unserialize(text)
-	if message.type ~= "getFiles" then
-		return nil
-	end
-
-	-- Send all computer specific files
-	if message.computerType == nil then 
-		print("ERROR!  No computer type provided.")
-		return nil
-	end
-
+function getFiles(message, replyChannel)
 	fileList = fs.list(message.computerType)
 	if #fileList == 0 then
 		print("ERROR!  Unknown computer type: "..message.computerType)
@@ -47,8 +31,8 @@ function getFiles(event, side, recvChannel, replyChannel, text)
 			response["apis/"..file] = handle.readAll()
 		end
 	end
-	modem.transmit(replyChannel, const.channel.admin, textutils.serialize(response))
+	modem.transmit(replyChannel, 0, textutils.serialize(response))
 end
 
 modem.open(const.channel.admin)
-es.addHandler("modem_message", getFiles)
+es.modemHandler(const.channel.admin, "getFiles", getFiles)

@@ -9,7 +9,7 @@ end
 local privChannel = const.channel.getPrivate()
 
 function itemInSystem(itemID, callback)
-	utils.modemEventOnce(privChannel, "itemInSystem", function (message)
+	utils.modemOnce(privChannel, "itemInSystem", function (message)
 		if message then
 			message = textutils.unserialize(message)
 			return callback(nil, message.exists)

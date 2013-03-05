@@ -1,7 +1,7 @@
 channel = {
 	admin = 1,
 	extract = 2,
-	itmMgr = 3,
+	invMgr = 3,
 	getPrivate = function () return 10000 + os.getComputerID() end
 }
 

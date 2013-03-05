@@ -129,6 +129,34 @@ function removeHandler(func)
 
 end
 
+function once(etype, func)
+  addHandler(etype, function (...)
+    func(unpack(arg))
+    removeHandler(func)
+  end)
+end
+
+function modemHandler(listenChannel, messageType, func)
+  local handler = function ( event, side, recvChannel, replyChannel, messageText ) 
+    if recvChannel ~= listenChannel then return nil end
+    if not messageText or #messageText == 0 then return nil end
+    local message = textutils.unserialize(messageText)
+    if message.type == messageType then
+      func(message, replyChannel)
+    end
+  end
+  addHandler("modem_message", handler)
+  return handler
+end
+
+function modemOnce(listenChannel, messageType, func)
+  local handler = modemHandler(listenChannel, messageType, func)
+  addHandler("modem_message", function (...) 
+    func(unpack(arg))
+    removeHandler(handler)
+  end)
+
+
 function exit()
   handlers = nil
   os.queueEvent('internal-terminate')
