@@ -13,7 +13,8 @@ function modemEventOnce(listenChannel, messageType, callback)
 	local handler = modemHandler(listenChannel, messageType, function (...)
 		es.removeHandler(handler)
 		return callback(unpack(arg))
-	end
+	end)
+end
 
 function findPeripheral(type)
 	local sides = {"top", "bottom", "left", "right", "front", "back"}

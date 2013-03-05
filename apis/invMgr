@@ -1,7 +1,7 @@
 if not const then os.loadAPI("const") end
 if not utils then os.loadAPI("utils") end
 
-if not modem then modem = utils.findPeripheral("modem")
+if not modem then modem = utils.findPeripheral("modem") end
 if not modem then
 	print("ERROR!  Could not find modem!")
 end

@@ -3,6 +3,8 @@ if not const then os.loadAPI("apis/const") end
 if not utils then os.loadAPI("apis/utils") end
 if not es then os.loadAPI("apis/es") end
 
+local modem = utils.findPeripheral("modem")
+
 -- Do common setup for all slave machines
 function init()
 	local handle, data
@@ -17,8 +19,9 @@ function init()
 	end
 
 	-- Listen for code updates
-	utils.modemHander(const.channel.admin, os.getComputerLabel(), function (message)
+	utils.modemHandler(const.channel.admin, os.getComputerLabel(), function (message)
 		local filename, text, handle
+		if not message then return nil end 
 		if not message.code then return nil end
 		for filename, text in pairs(code) do
 			handle = fs.open(filename, "w")

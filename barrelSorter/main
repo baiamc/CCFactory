@@ -43,7 +43,7 @@ end
 -- Need to let the extract computer know.
 function itemAdded()
 	return utils.modemHandler(const.channel.extract, "itemAdded", function (message)
-		if extractType = nil then
+		if extractType == nil then
 			invData = sorter.list(const.dir.up)
 			if invData then
 				extractType = next(invData)
@@ -55,7 +55,8 @@ end
 
 -- Called when an item is to be removed completely from storage
 function removeItem()
-	return utils.modemHandler(const)
+	--return utils.modemHandler(const)
+end
 
 
 params = slave.init()
