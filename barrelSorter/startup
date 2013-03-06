@@ -1,3 +1,1 @@
-while true do
-	os.shell("main")
-end
+shell.run("main")

@@ -75,7 +75,7 @@ es.addHandler("isort_item", doSort)
 invData = sorter.list(const.dir.up)
 if invData then
 	extractType = next(invData)
-	es.modemHandler(const.channel.extract, extractType, doExtract
+	es.modemHandler(const.channel.extract, extractType, doExtract)
 end
 
 modem.open(const.channel.extract)

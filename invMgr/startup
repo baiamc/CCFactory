@@ -1,6 +1,1 @@
-reload = true
-while reload do
-	reload = false
-	shell.run("main")
-	if reload then print("Main terminated, recovering") end
-end
+shell.run("main")

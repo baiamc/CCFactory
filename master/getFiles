@@ -6,6 +6,9 @@
 --  modem is modem pheripheral
 
 if not const then os.loadAPI("apis/const") end
+if not utils then os.loadAPI("apis/utils") end
+
+local modem = utils.findPeripheral("modem")
 
 function getFiles(message, replyChannel)
 	fileList = fs.list(message.computerType)

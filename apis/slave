@@ -29,7 +29,7 @@ function init()
 			handle.write(text)
 			handle.close()
 		end
-		es.exit()
+		os.reboot()
 	end)
 
 
