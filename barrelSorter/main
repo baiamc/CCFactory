@@ -12,29 +12,32 @@ sorter = utils.findPeripheral("interactiveSorter")
 -- Event handler for when an item enters an interactive sorter on a barrel
 function doSort(event, currentItem, itemAmt)
 	if currentItem == sortType then
-		_, currentAmt = next(sorter.list(params.sortDir))
+		_, currentAmt = next(sorter.list(const.dir.down))
 		-- Prevent us from overflowing the barrel
-		if itemAmt + currentAmt > 128 then
-			overflow = itemAmt + currentAmt - 128
-			itemAmt = itemAmt - overflow
-			sorter.sort(params.extractDir, overflow)
+		if currentAmt > 64 then
+			sorter.sort(params.extractDir)
+		else
+			sorter.sort(const.dir.down)
+			invMgr.addItem(sortType, itemAmt)
 		end
-
-		-- Stick item in barrel and update the manager
-		sorter.sort(const.dir.down, itemAmt)
-		invMgr.addItem(sortType, itemAmt)
 	end
 end
 
 -- Event handler called when an item needs to be extracted
 function doExtract(message)
-	local extractAmt, available
+	local extractAmt, available, stacks
 	extractAmt = message.amount
-	while extractAmt > 64 do
+	stacks = 0
+	while extractAmt > 64 and next(sorter.list(const.dir.up))[2] == 64 do
 		sorter.extract(const.dir.up, extractType, params.extractDir, 64)
 		extractAmt = extractAmt - 64
+		stacks = stacks + 1
 	end
+	_, available = next(sorter.list(const.dir.up))
+	extractAmt = math.min(extractAmt, available)
 	sorter.extract(const.dir.up, extractType, params.extractDir, extractAmt)
+	invMgr.removeItem(sortType, stacks * 64 + extractAmt)
+
 end
 
 -- Event handler called when a new item type is added to the system

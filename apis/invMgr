@@ -23,11 +23,16 @@ end
 function addItem(itemID, amount)
 	local message = { type = "addItem", id = itemID, amount = amount}
 
-	modem.transmit(const.channel.invMgr, nil, textutils.serialize(message))
+	modem.transmit(const.channel.invMgr, 0, textutils.serialize(message))
+end
+
+function removeItem(itemID, amount)
+	local message = {type = "removeItem", id = itemID, amount = amount}
+	modem.transmit(const.channel.invMgr, 0, texturils.serialize(message))
 end
 
 function getItemMax(itemID)
-	modem.transmit()
+
 end
 
 function addIemToSystem()
@@ -37,3 +42,4 @@ end
 function updateItemCount()
 
 end
+
