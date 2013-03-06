@@ -11,3 +11,4 @@ end)
 
 slave.init()
 es.start()
+reload = true
